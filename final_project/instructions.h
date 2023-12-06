@@ -14,9 +14,9 @@ typedef struct {
 } State;
 
 void initialState(State* state);
-long int convertToDecimal(const char *binary);
+long int convertToDecimal(char *binary);
 long int memoryFind(Memory* memory, long int address, long int num);
-char* substring(const char* str, int start_index, int length);
+long int substring(const char* str, int start_index, int length);
 void modifyNZP(State* state, long int data);
 
 void LD(State* state, Memory* memory, int i, long int num);

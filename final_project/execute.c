@@ -8,18 +8,20 @@ void initialState(State* state){
 	state->pc = 0;
 }
 
-long int convertToDecimal(const char *binary) {
+long int convertToDecimal(char *binary) {
     return strtol(binary, NULL, 2);
 }
 
-char* substring(const char* str, int start_index, int length) {
+long int substring(const char* str, int start_index, int length) {
     char* substr = (char*)malloc((length + 1) * sizeof(char));
-    
 	strncpy(substr, str + start_index, length);
-	
     substr[length] = '\0';
 	
-    return substr;
+	long int res = convertToDecimal(substr);
+	
+	free(substr);
+	
+    return res;
 }
 
 long int memoryFind(Memory* memory, long int addr, long int num){
@@ -40,8 +42,8 @@ void modifyNZP(State* state, long int data){
 
 void LD(State* state, Memory* memory, int i, long int num){
 	long int reg, offset, addr, data_index, data;
-	reg = convertToDecimal(substring(memory[i].content, 4, 3));
-	offset = convertToDecimal(substring(memory[i].content, 7, 9));
+	reg = substring(memory[i].content, 4, 3);
+	offset = substring(memory[i].content, 7, 9);
 	addr = state->pc + offset;  // data address = pc + offset
 	
 	data_index = memoryFind(memory, addr, num);
@@ -52,9 +54,9 @@ void LD(State* state, Memory* memory, int i, long int num){
 
 void LDR(State* state, Memory* memory, int i, long int num){
 	long int reg, offset, addr, data_index, data, base;
-	reg = convertToDecimal(substring(memory[i].content, 4, 3));
-	offset = convertToDecimal(substring(memory[i].content, 10, 6));
-	base = convertToDecimal(substring(memory[i].content, 7, 3));
+	reg = substring(memory[i].content, 4, 3);
+	offset = substring(memory[i].content, 10, 6);
+	base = substring(memory[i].content, 7, 3);
 	addr = state->registers[base] + offset;  // data address = base + offset
 	
 	data_index = memoryFind(memory, addr, num);
@@ -66,15 +68,15 @@ void LDR(State* state, Memory* memory, int i, long int num){
 
 void ADD(State* state, Memory* memory, int i, long int num){
 	long int reg, s1, s2, classify, data;
-	reg = convertToDecimal(substring(memory[i].content, 4, 3));
-	s1 = convertToDecimal(substring(memory[i].content, 7, 3));
-	classify = convertToDecimal(substring(memory[i].content, 10, 1)); // classify two kinds of add instructions
+	reg = substring(memory[i].content, 4, 3);
+	s1 = substring(memory[i].content, 7, 3);
+	classify = substring(memory[i].content, 10, 1); // classify two kinds of add instructions
 
 	if(classify == 0){
-		s2 = convertToDecimal(substring(memory[i].content, 13, 3));
+		s2 = substring(memory[i].content, 13, 3);
 		state->registers[reg] = state->registers[s1] + state->registers[s2]; // the sum of the values of two source registers
 	}else{
-		data = convertToDecimal(substring(memory[i].content, 11, 5));
+		data = substring(memory[i].content, 11, 5);
 		state->registers[reg] = state->registers[s1] + data; // the sum of the value of one source register and an immediate operand
 	}
 	modifyNZP(state, state->registers[reg]); // set the NZP
@@ -82,19 +84,19 @@ void ADD(State* state, Memory* memory, int i, long int num){
 
 void BRp(State* state, Memory* memory, int i, long int num){
 	long int p, step;
-	p = convertToDecimal(substring(memory[i].content, 6, 1)); // p determines whether to jump
+	p = substring(memory[i].content, 6, 1); // p determines whether to jump
 	
 	if(p == 0) return; 
 	
-	step = convertToDecimal(substring(memory[i].content, 7, 9));
+	step = substring(memory[i].content, 7, 9);
 	state->pc = state->pc + step; // jump to the destination
 }
 
 void STR(State* state, Memory* memory, int i, long int num){
 	long int sr, offset, addr, data, base;
-	sr = convertToDecimal(substring(memory[i].content, 4, 3));
-	base = convertToDecimal(substring(memory[i].content, 7, 3));
-	offset = convertToDecimal(substring(memory[i].content, 10, 6));
+	sr = substring(memory[i].content, 4, 3);
+	base = substring(memory[i].content, 7, 3);
+	offset = substring(memory[i].content, 10, 6);
 	
 	addr = state->registers[base] + offset;  // data address = base + offset
 	data = state->registers[sr];
