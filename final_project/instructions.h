@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 typedef struct {
     char address[17];  // 16 bits + '\0'
@@ -14,7 +15,7 @@ typedef struct {
 } State;
 
 void initialState(State* state);
-long int convertToDecimal(char *binary);
+long int convertToDecimal(const char *binary_ori);
 long int memoryFind(Memory* memory, long int address, long int num);
 long int substring(const char* str, int start_index, int length);
 void modifyNZP(State* state, long int data);

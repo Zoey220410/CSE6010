@@ -8,8 +8,23 @@ void initialState(State* state){
 	state->pc = 0;
 }
 
-long int convertToDecimal(char *binary) {
-    return strtol(binary, NULL, 2);
+long int convertToDecimal(const char *binary_ori) {
+	long int result;
+	int length = strlen(binary_ori);
+	char* binary = (char*)malloc((length + 1) * sizeof(char));
+	strncpy(binary, binary_ori, length);
+	binary[length] = '\0';
+	
+	if(binary[0] == '1' && strlen(binary) > 3){
+		binary[0] = '0';
+		result = strtol(binary, NULL, 2) - (long int)pow(2, length-1);
+	}else{
+		result = strtol(binary, NULL, 2);
+	}
+	
+	free(binary);
+
+    return result;
 }
 
 long int substring(const char* str, int start_index, int length) {
@@ -38,6 +53,7 @@ void modifyNZP(State* state, long int data){
 	}else{
 		state->cc = 1; // zero -- P
 	}
+
 }
 
 void LD(State* state, Memory* memory, int i, long int num){
@@ -60,7 +76,7 @@ void LDR(State* state, Memory* memory, int i, long int num){
 	addr = state->registers[base] + offset;  // data address = base + offset
 	
 	data_index = memoryFind(memory, addr, num);
-	data = convertToDecimal(memory[data_index].content); // find the data in the main memory
+	data = convertToDecimal(memory[data_index].content); // fetch the data from the main memory
 	state->registers[reg] = data;  // load the date to the register
 	modifyNZP(state, data); // set the NZP
 	
@@ -86,14 +102,14 @@ void BRp(State* state, Memory* memory, int i, long int num){
 	long int p, step;
 	p = substring(memory[i].content, 6, 1); // p determines whether to jump
 	
-	if(p == 0) return; 
+	if(p != 1 || state->cc != 1) return; 
 	
 	step = substring(memory[i].content, 7, 9);
 	state->pc = state->pc + step; // jump to the destination
 }
 
 void STR(State* state, Memory* memory, int i, long int num){
-	long int sr, offset, addr, data, base;
+	long int sr, offset, addr, base, data_index, data;
 	sr = substring(memory[i].content, 4, 3);
 	base = substring(memory[i].content, 7, 3);
 	offset = substring(memory[i].content, 10, 6);
@@ -101,5 +117,6 @@ void STR(State* state, Memory* memory, int i, long int num){
 	addr = state->registers[base] + offset;  // data address = base + offset
 	data = state->registers[sr];
 		
-	printf("%lx %ld\n", addr, data);
+	unsigned short addr_16bit = (unsigned short)(addr & 0xFFFF);
+    printf("%X %ld\n", addr_16bit, data);
 }
