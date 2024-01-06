@@ -1,7 +1,7 @@
 #include "instructions.h"
 
 int main(int argc, char *argv[]) {
-	FILE *file = fopen(argv[1], "r");
+	FILE *file = fopen(argv[1], "r"); // open the file
 	
 	long int num, i;
 	i = 0;
@@ -9,12 +9,12 @@ int main(int argc, char *argv[]) {
 	Memory* memory = (Memory*) malloc(num * sizeof(Memory));
 	
 	for(int i=0; i<num; i++){
-		fscanf(file, "%s %s", memory[i].address, memory[i].content);
+		fscanf(file, "%s %s", memory[i].address, memory[i].content); // load all the instructions into the memory
 	}
 	
 	fclose(file);
 	
-	State* state = (State*) malloc(sizeof(State));
+	State* state = (State*) malloc(sizeof(State));  // record the LC3 system state
 	initialState(state);
 	
 	while(state->pc < num) {
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
         }
     }
 	
-	free(memory);
+	free(memory);  
 	free(state);
 	
 	return 0;		

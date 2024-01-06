@@ -9,9 +9,9 @@ typedef struct {
 } Memory;
 
 typedef struct {
-    long int registers[8];        // General-purpose registers
-    int cc;            // Condition codes: N(-1), Z(0), P(1)
-    long int pc;            // Program Counter
+    long int registers[8]; // General-purpose registers
+    int cc;     // Condition codes: N(-1), Z(0), P(1)
+    long int pc;      // Program Counter
 } State;
 
 void initialState(State* state);
